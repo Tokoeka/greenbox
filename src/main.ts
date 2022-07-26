@@ -1,4 +1,4 @@
-import { Familiar, getPermedSkills, print, toInt, toSkill, visitUrl } from "kolmafia";
+import { allNormalOutfits, Familiar, getPermedSkills, haveOutfit, print, toInt, toSkill, visitUrl } from "kolmafia";
 import { have } from "libram";
 
 /**
@@ -11,6 +11,7 @@ export interface SnapshotOutput {
   familiars?: number[];
   trophies?: number[];
   tattoos?: string[];
+  outfits?: number[];
 }
 
 /**
@@ -94,6 +95,21 @@ export function checkTattoos(): SnapshotOutput {
   return tattooOutput;
 }
 
+export function checkOutfits(): SnapshotOutput {
+  const outfitsOwned = new Set<number>();
+  const outfitList = allNormalOutfits();
+
+  for (let i = 0; i < outfitList.length; i++){
+    const outfit = outfitList[i];
+    if (haveOutfit(outfit)) outfitsOwned.add(i);
+  }
+
+  const outfitOutput = {
+    outfits: Array.from(outfitsOwned),
+  }
+  return outfitOutput;
+}
+
 export function main(): void {
   /**
    * Rev requested that the final data be staged as such:
@@ -112,6 +128,7 @@ export function main(): void {
     familiars: checkFamiliars().familiars,
     trophies: checkTrophies().trophies,
     tattoos: checkTattoos().tattoos,
+    outfits: checkOutfits().outfits,
   };
 
   print(JSON.stringify(greenboxOutput));
